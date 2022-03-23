@@ -1,0 +1,40 @@
+---
+# tasks file for SSITA_geocitizen_SERVER_docker
+
+- name: update apt cache
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400
+
+- name: installing base tools
+  apt:
+    pkg:
+    - lsb-release
+
+- name: add Docker's official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: get codename
+  ansible.builtin.shell: lsb_release -cs
+  register: var_codename
+
+- name: add Docker repository into sources list
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ var_codename.stdout }} stable
+    state: present
+
+- name: installing Docker tools
+  apt:
+    pkg:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+
+- name: add current user to Docker group
+  ansible.builtin.user:
+    name: "{{ ansible_ssh_user }}"
+    groups: docker
+    append: yes
