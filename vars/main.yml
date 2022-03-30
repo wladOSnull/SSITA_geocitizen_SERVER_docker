@@ -1,2 +1,4 @@
 ---
 # vars file for SSITA_geocitizen_SERVER_docker
+
+node_exporter_version: 1.3.1

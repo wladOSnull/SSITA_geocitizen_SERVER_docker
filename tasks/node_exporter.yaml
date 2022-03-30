@@ -1,0 +1,43 @@
+---
+# tasks file for SSITA_geocitizen_SERVER_docker
+
+- name: update apt cache
+  apt:
+    upgrade: yes
+    update_cache: yes
+
+- name: download node_exporter and unpack
+  ansible.builtin.unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+    dest: /usr/local/bin
+    extra_opts: 
+      - "--strip-components=1"
+      - "node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    remote_src: True
+    owner: root
+    group: root
+
+- name: add the group node_exporter
+  ansible.builtin.group:
+    name: node_exporter
+    state: present
+
+- name: add the user node_exporter
+  ansible.builtin.user:
+    name: node_exporter
+    groups: node_exporter
+    shell: /bin/false
+    state: present
+
+- name: create service unit for node_exporter  
+  ansible.builtin.copy:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+    mode: '777'
+
+- name: restart systemd and start+enable node_exporter service unit
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    state: started
+    enabled: yes
+    name: node_exporter.service

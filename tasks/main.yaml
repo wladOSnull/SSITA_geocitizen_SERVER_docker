@@ -1,0 +1,5 @@
+---
+# tasks file for SSITA_geocitizen_SERVER_docker
+
+- include_tasks: docker.yaml
+- include_tasks: node_exporter.yaml
