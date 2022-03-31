@@ -1,0 +1,28 @@
+---
+# tasks file for debian
+
+- name: install python3-pip
+  apt:
+    name: python3-pip
+    state: present
+
+- name: install Python packages
+  pip: 
+    name: docker
+    state: present
+
+- name: get dockerized sensu-agent image
+  community.docker.docker_image:
+    name: surian/sensu-go:latest
+    source: pull
+    pull:
+      platform: amd64
+
+- name: start sensu-agent with specified backend
+  community.docker.docker_container:
+    name: geo-sensu-agent
+    image: surian/sensu-go:latest
+    command: sensu-agent start --backend-url ws://{{ sensu_backend }}
+    state: started
+    recreate: yes
+...

@@ -3,3 +3,4 @@
 
 - include_tasks: docker.yaml
 - include_tasks: node_exporter.yaml
+- include_tasks: sensu_agent.yaml
